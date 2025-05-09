@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}АО "ЖИЛУПРАВЛЕНИЕ"{% endblock %}
+
+{% block content %}
+<div class="header-block">
+    <div class="header-content">
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="Логотип" class="header-logo">
+        <div class="header-text">
+            <h1>АО "ЖИЛУПРАВЛЕНИЕ"</h1>
+            <p class="address">ГОРОД ОКТЯБРЬСКИЙ, РЕСПУБЛИКА БАШКОРТОСТАН</p>
+        </div>
+    </div>
+</div>
+
+<h2>Последние новости</h2>
+<div class="news">
+    {% if news %}
+        {% for title, content, created_at, file_link, media_link in news %}
+            <div class="news-item">
+                <h3>{{ title }}</h3>
+                <p>{{ content | safe  }}</p>
+                {% if media_link %}
+                    {% if media_link.endswith('.jpg') or media_link.endswith('.jpeg') or media_link.endswith('.png') or media_link.endswith('.gif') %}
+                        <img src="{{ media_link }}" alt="Изображение" style="max-width: 100%; height: auto;">
+                    {% elif media_link.startswith('https://www.youtube.com/') or media_link.startswith('https://youtu.be/') %}
+                        <iframe width="100%" height="315" src="{{ media_link }}" frameborder="0" allowfullscreen></iframe>
+                    {% endif %}
+                {% endif %}
+                {% if file_link %}
+                    <p><a href="{{ file_link }}" target="_blank">Скачать файл</a></p>
+                {% endif %}
+                <small>Опубликовано: {{ created_at }}</small>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>Новостей пока нет.</p>
+    {% endif %}
+</div>
+{% endblock %}

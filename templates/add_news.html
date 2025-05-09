@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Добавить новость{% endblock %}
+
+{% block content %}
+<h1>Добавить новость</h1>
+<form method="POST" enctype="multipart/form-data">
+    <label for="title">Заголовок:</label>
+    <input type="text" id="title" name="title" required>
+
+    <label for="content">Текст новости:</label>
+    <textarea id="content" name="content" rows="5"></textarea>
+
+    <label for="media_link">Ссылка на изображение/видео:</label>
+    <input type="url" id="media_link" name="media_link" placeholder="https://example.com/image.jpg">
+
+    <label for="file">Прикрепить файл:</label>
+    <input type="file" id="file" name="file">
+
+    <button type="submit">Добавить новость</button>
+</form>
+{% endblock %}

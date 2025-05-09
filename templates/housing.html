@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Жилой фонд{% endblock %}
+
+{% block content %}
+
+<div class="content-block">
+    <h2>Перечень многоквартирных домов, находящихся в управлении ОАО «Жилуправление» на 01.12.2024 г.</h2>
+    <ol>
+        {% for house in houses %}
+            <li>{{ house }}</li>
+        {% endfor %}
+    </ol>
+</div>
+{% endblock %}
