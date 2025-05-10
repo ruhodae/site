@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+{% block title %}Личный кабинет{% endblock %}
+
+{% block content %}
+<div class="content-block">
+  <h1>Личный кабинет</h1>
+
+  <form method="post" enctype="multipart/form-data" class="profile-form">
+    <input type="hidden" name="action" value="update_profile">
+
+    {# Извлекаем текстовый статус в удобную переменную #}
+    {% set status = profile[3] %}
+
+    <div class="form-group">
+      <label for="full_name">ФИО</label>
+      <input
+        type="text" id="full_name" name="full_name"
+        value="{{ profile[0] }}"
+        {% if status == 'verified' %}disabled{% endif %}
+        required>
+    </div>
+
+    <div class="form-group">
+      <label for="address">Адрес</label>
+      <input
+        type="text" id="address" name="address"
+        value="{{ profile[1] }}"
+        {% if status == 'verified' %}disabled{% endif %}
+        required>
+    </div>
+
+    {# Загрузка паспорта видна только если ещё не верифицированы #}
+    {% if status != 'verified' %}
+    <div class="form-group">
+      <label for="passport_file">Загрузить паспорт для верификации</label>
+      <input type="file" id="passport_file" name="passport_file" {% if not profile[2] %}required{% endif %}>
+      {% if profile[2] %}
+        <p>Уже загружён: <a href="{{ url_for('static', filename=profile[2]|replace('static/','')) }}" target="_blank">{{ profile[2].split('/')[-1] }}</a></p>
+      {% endif %}
+    </div>
+    {% endif %}
+
+    <div class="form-group">
+      <label>Статус верификации</label>
+      {% if status == 'verified' %}
+        <span class="status status-success">Верифицирован</span>
+      {% elif status == 'rejected' %}
+        <span class="status status-danger">Отклонено, попробуйте снова</span>
+      {% else %}
+        <span class="status status-pending">Ожидание верификации</span>
+      {% endif %}
+    </div>
+
+    <div class="form-actions">
+      {% if status != 'verified' %}
+        <button type="submit" class="btn">Сохранить и отправить на проверку</button>
+        <a href="{{ url_for('login_gosuslugi') }}" class="btn btn-secondary">
+          Верификация через Госуслуги
+        </a>
+      {% endif %}
+      <a href="{{ url_for('send_request') }}" class="btn btn-primary">
+        Отправить обращение
+      </a>
+    </div>
+  </form>
+
+  <h2>Мои обращения</h2>
+  {% if user_requests %}
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Имя</th>
+          <th>Адрес</th>
+          <th>Обращение</th>
+          <th>Статус</th>
+          <th>Дата</th>
+          <th>Обновить</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for name, addr, msg, status, date in user_requests %}
+          {% set display_status = 'Ожидание' if status in [None,'Новое'] else status %}
+          {% set display_date = date.strftime('%Y-%m-%d') if date else '-' %}
+          <tr>
+            <td>{{ name }}</td>
+            <td>{{ addr }}</td>
+            <td>{{ msg }}</td>
+            <td class="text-center">
+			{% set ds = display_status %}
+			{% set cls = 'status-gray' %}
+			{% if ds == 'В работе' %}
+			{% set cls = 'status-blue' %}
+			{% elif ds == 'Выполнено' %}
+			{% set cls = 'status-green' %}
+			{% elif ds == 'Отклонено' %}
+			{% set cls = 'status-red' %}
+	{% endif %}
+  <span class="{{ cls }}">{{ ds }}</span>
+</td>
+            <td>{{ display_date }}</td>
+           <td class="text-center">
+			<button class="btn btn-sm btn-outline-secondary" onclick="location.reload()">↻</button>
+			</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>У вас ещё нет обращений.</p>
+  {% endif %}
+
+  <div class="logout-block" style="text-align:left;">
+    <a href="{{ url_for('logout') }}" class="btn btn-logout">Выйти</a>
+  </div>
+
+  {% if session.username == 'Admin' %}
+    <h2>Пользователи на верификацию</h2>
+    {% if pending_users %}
+      <ul class="verify-list">
+        {% for pid, uid, uname, fname, pfile in pending_users %}
+          <li class="verify-item">
+            <strong>{{ uname }}</strong> ({{ fname }})
+ <a href="{{ url_for(
+      'static',
+      filename='uploads/' ~ uid ~ '/' ~ pfile
+    ) }}"
+    target="_blank"
+    class="btn btn-primary btn-sm passport-check"
+    style="margin-left:12px;">
+    Проверить паспорт
+  </a>
+            <div class="verify-actions" style="margin-left:8px;">
+              <form method="post" action="{{ url_for('verify_user', pid=pid) }}" style="display:inline;">
+                <button type="submit" class="btn btn-success btn-sm">Подтвердить</button>
+              </form>
+              <form method="post" action="{{ url_for('reject_user', pid=pid) }}" style="display:inline;">
+                <button type="submit" class="btn btn-danger btn-sm">Отклонить</button>
+              </form>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>Нет пользователей на верификацию.</p>
+    {% endif %}
+  {% endif %}
+</div>
+{% endblock %}

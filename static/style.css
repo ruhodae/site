@@ -7,6 +7,7 @@ body {
     color: #333; /* Темно-серый текст */
     line-height: 1.6;
 }
+.text-center { text-align: center; }
 
 /* Стили для шапки */
 header {
@@ -232,3 +233,203 @@ input[type="text"], input[type="password"], input[type="email"] {
     font-weight: normal;
     letter-spacing: 0.5px;
 }
+
+.status { padding: 4px 8px; border-radius: 4px; font-size: 0.9em; }
+.status-primary { background: #0d6efd; color: #fff; }
+.status-success { background: #198754; color: #fff; }
+.status-danger  { background: #dc3545; color: #fff; }
+.status-warning { background: #ffc107; color: #000; }
+.status-pending { background: #6c757d; color: #fff; }
+
+.content-block > h1 {
+    font-size: 1.8em;
+    margin-bottom: 20px;
+    color: #003366;
+}
+
+/* Формы профиля */
+/* ---------- Личный кабинет ---------- */
+.content-block {
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 30px;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.content-block h1 {
+  font-size: 1.6em;
+  color: #003366;
+  margin-bottom: 16px;
+}
+
+.profile-form .form-group {
+  margin-bottom: 20px;
+}
+.profile-form label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 4px;
+  color: #003366;
+}
+.profile-form input[type="text"] {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #bbb;
+  border-radius: 4px;
+}
+.profile-form input[type="file"] {
+  width: auto;
+}
+
+.profile-form .form-actions {
+  margin-top: 30px;          
+  margin-bottom: 30px; 
+}
+.profile-form .btn {
+  margin-right: 8px;
+}
+
+/* Кнопки */
+.btn {
+  background-color: #005ca9;
+  color: #fff;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color .2s;
+}
+.btn:hover {
+  background-color: #003366;
+}
+
+
+/* Обращения */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+}
+.table th, .table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+.table th {
+  background: #f0f4f8;
+  color: #003366;
+  font-weight: normal;
+}
+.btn-refresh {
+  background: none;
+  border: none;
+  color: #005ca9;
+  cursor: pointer;
+  font-size: 1.2em;
+}
+.btn-refresh:hover {
+  color: #003366;
+}
+
+/* Статусы */
+.status {
+  padding: 4px 8px;
+  border-radius: 4px;
+  color: #fff;
+  font-size: .85em;
+}
+
+.status-gray   { color: #6c757d; } /* тёмно-серый */
+.status-blue   { color: #007bff; } /* синий */
+.status-green  { color: #28a745; } /* зелёный */
+.status-red    { color: #dc3545; } /* красный */
+
+/* Logout */
+.logout-block {
+  margin-top: 40px;
+  text-align: left;
+}
+.logout-block .btn-logout {
+  background-color: #dc3545;
+}
+.logout-block .btn-logout:hover {
+  background-color: #a71d2a;
+}
+
+/* ---------- Отправка обращения ---------- */
+.send-request-container {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 20px;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+.send-request-container h1 {
+  text-align: center;
+  color: #003366;
+  margin-bottom: 16px;
+}
+.send-request-form textarea {
+  width: 100%;
+  height: 200px;
+  padding: 8px;
+  border: 1px solid #bbb;
+  border-radius: 4px;
+  resize: none;
+}
+.send-request-form .form-actions {
+  text-align: center;
+  margin-top: 16px;
+}
+.send-request-form .btn {
+  margin: 0 8px;
+}
+.btn-sm {
+  padding: 4px 8px 
+  font-size: 0.85em 
+}
+.btn-danger {
+  background-color: #dc3545;
+  color: #fff;
+}
+.btn-danger: {
+  background-color: #a71d2a;
+}
+/* Верификация: скрыть/показать кнопки */
+.verify-actions {
+  display: none;
+  margin-left: 12px;
+}
+
+.verify-item:hover .verify-actions {
+  display: inline-block;
+}
+
+/* Отступ у кнопки «Паспорт» */
+.passport-check {
+  margin-left: 12px;
+    color: #fff !important;
+}
+
+/* Компактные кнопки */
+.btn-sm {
+  padding: 4px 8px !important;
+  font-size: 0.85em !important;
+}ex: 10;
+}
+
+.housing-list {
+  columns: 3;
+  column-gap: 2em;
+  list-style: none;
+  padding: 0;
+  margin: 1em 0;
+}
+
+.housing-list li {
+  margin-bottom: .5em;
+}
+

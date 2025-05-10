@@ -1,8 +1,7 @@
 {% extends "base.html" %}
-
-{% block title %}АО "ЖИЛУПРАВЛЕНИЕ"{% endblock %}
-
+{% block title %}Главная{% endblock %}
 {% block content %}
+
 <div class="header-block">
     <div class="header-content">
         <img src="{{ url_for('static', filename='logo.png') }}" alt="Логотип" class="header-logo">
@@ -13,28 +12,32 @@
     </div>
 </div>
 
-<h2>Последние новости</h2>
-<div class="news">
-    {% if news %}
-        {% for title, content, created_at, file_link, media_link in news %}
-            <div class="news-item">
-                <h3>{{ title }}</h3>
-                <p>{{ content | safe  }}</p>
-                {% if media_link %}
-                    {% if media_link.endswith('.jpg') or media_link.endswith('.jpeg') or media_link.endswith('.png') or media_link.endswith('.gif') %}
-                        <img src="{{ media_link }}" alt="Изображение" style="max-width: 100%; height: auto;">
-                    {% elif media_link.startswith('https://www.youtube.com/') or media_link.startswith('https://youtu.be/') %}
-                        <iframe width="100%" height="315" src="{{ media_link }}" frameborder="0" allowfullscreen></iframe>
-                    {% endif %}
-                {% endif %}
-                {% if file_link %}
-                    <p><a href="{{ file_link }}" target="_blank">Скачать файл</a></p>
-                {% endif %}
-                <small>Опубликовано: {{ created_at }}</small>
-            </div>
-        {% endfor %}
-    {% else %}
-        <p>Новостей пока нет.</p>
-    {% endif %}
+<div class="news-list">
+  {% for n_id, title, content, created_at, file_link, media_link in news %}
+    <article class="news-item">
+      <h2>{{ title }}</h2>
+      <p>{{ content }}</p>
+
+      {% if file_link %}
+        <p><a href="{{ url_for('static', filename=file_link.split('static/')[-1]) }}" target="_blank">
+          Скачать вложение
+        </a></p>
+      {% endif %}
+      {% if media_link %}
+        <div class="media"><img src="{{ media_link }}" alt="Медиа к новости"></div>
+      {% endif %}
+
+      <p class="news-date">Опубликовано: {{ created_at }}</p>
+
+      {% if logged_in and username == 'Admin' %}
+        <div class="admin-controls">
+          <a href="{{ url_for('edit_news', news_id=n_id) }}" class="btn btn-secondary btn-sm">Изменить</a>
+          <form action="{{ url_for('delete_news', news_id=n_id) }}" method="post" style="display:inline">
+            <button type="submit" class="btn btn-danger btn-sm">Удалить</button>
+          </form>
+        </div>
+      {% endif %}
+    </article>
+  {% endfor %}
 </div>
 {% endblock %}

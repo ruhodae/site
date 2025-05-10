@@ -6,10 +6,10 @@
 
 <div class="content-block">
     <h2>Перечень многоквартирных домов, находящихся в управлении ОАО «Жилуправление» на 01.12.2024 г.</h2>
-    <ol>
-        {% for house in houses %}
-            <li>{{ house }}</li>
-        {% endfor %}
-    </ol>
+  <ul class="housing-list">
+    {% for house in houses %}
+      <li>{{ house }}</li>
+    {% endfor %}
+  </ul>
 </div>
 {% endblock %}

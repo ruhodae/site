@@ -9,22 +9,22 @@
 <body>
 <header>
     <div class="header-container">
-        <nav>
-            <ul>
-                <li><a href="{{ url_for('home') }}">Главная</a></li>
-                <li><a href="{{ url_for('schedule') }}">Режим работы</a></li>
-                <li><a href="{{ url_for('housing') }}">Жилой фонд</a></li>
-                <li><a href="{{ url_for('contacts') }}">Контакты</a></li>
-                <li><a href="{{ url_for('tariffs') }}">Тарифы</a></li>
-                {% if session.get('username') %}
-                    <li><a href="{{ url_for('logout') }}">Выйти ({{ session['username'] }})</a></li>
-                {% else %}
-                    <li><a href="{{ url_for('login') }}">Войти</a></li>
-                    <li><a href="{{ url_for('register') }}">Регистрация</a></li>
-                {% endif %}
-                <li><a href="{{ url_for('add_news') }}">Добавить новость</a></li>
-            </ul>
-        </nav>
+<nav>
+  <ul>
+    <li><a href="{{ url_for('home') }}">Главная</a></li>
+    <li><a href="{{ url_for('schedule') }}">Режим работы</a></li>
+    <li><a href="{{ url_for('housing') }}">Жилой фонд</a></li>
+    <li><a href="{{ url_for('contacts') }}">Контакты</a></li>
+    <li><a href="{{ url_for('tariffs') }}">Тарифы</a></li>
+    {% if session.username %}
+      <li><a href="{{ url_for('account') }}">Личный кабинет</a></li>
+    {% else %}
+      <li><a href="{{ url_for('login') }}">Войти</a></li>
+      <li><a href="{{ url_for('register') }}">Регистрация</a></li>
+    {% endif %}
+  </ul>
+</nav>
+
         <div class="header-contacts">
             <p>Адрес: г. Октябрьский, ул. Кувыкина 25А.</p>
             <p>Email: <a href="mailto:jkz-okt2@yandex.ru">jkz-okt2@yandex.ru</a> | Тел.: <strong>8 (347) 675-45-12</strong></p>
