@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Редактировать новость{% endblock %}
+
+{% block content %}
+  <h1>Редактировать новость</h1>
+  <form method="post" enctype="multipart/form-data"
+        action="{{ url_for('edit_news', nid=nid) }}">
+		
+    <div class="form-group">
+      <label for="title">Заголовок</label>
+      <input type="text" id="title" name="title"
+             class="form-control" value="{{ news[0] }}">
+    </div>
+    <div class="form-group">
+      <label for="content">Содержимое</label>
+      <textarea id="content" name="content" rows="10"
+                class="form-control">{{ news[1] }}</textarea>
+    </div>
+
+    {% if news[2] %}
+      <div class="form-group">
+        <label>Текущий файл / изображение</label><br>
+        {% if news[2].lower().endswith(('.png','.jpg','.jpeg','.gif')) %}
+          <img src="{{ news[2] }}" alt="Превью" style="max-width:200px;">
+        {% else %}
+          <a href="{{ news[2] }}" target="_blank">Скачать файл</a>
+        {% endif %}
+        <div class="form-check mt-1">
+          <input class="form-check-input" type="checkbox"
+                 id="remove_file" name="remove_file">
+          <label class="form-check-label" for="remove_file">
+            Удалить старый файл
+          </label>
+        </div>
+      </div>
+    {% endif %}
+
+    <div class="form-group">
+      <label for="file">Прикрепить новый файл</label>
+      <input type="file" id="file" name="file" class="form-control-file">
+    </div>
+    <div class="form-group">
+      <label for="media_link">Ссылка на изображение/видео</label>
+      <input type="url" id="media_link" name="media_link"
+             class="form-control"
+             placeholder="https://example.com/media.jpg"
+             value="{{ news[3] or '' }}">
+    </div>
+
+    <button type="submit" class="btn btn-primary">Сохранить</button>
+    <a href="{{ url_for('home') }}" class="btn btn-secondary">Отмена</a>
+  </form>
+{% endblock %}

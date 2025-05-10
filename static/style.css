@@ -98,7 +98,7 @@ button:hover, input[type="submit"]:hover {
 }
 
 input[type="text"], input[type="password"], input[type="email"] {
-    width: 100%;
+    width: 95%;
     padding: 8px;
     margin: 8px 0;
     border: 1px solid #ccc;
@@ -232,6 +232,15 @@ input[type="text"], input[type="password"], input[type="email"] {
     margin-top: 5px;
     font-weight: normal;
     letter-spacing: 0.5px;
+}
+
+textarea {
+  width: 95%;
+  height: 200px;
+  padding: 8px;
+  border: 1px solid #bbb;
+  border-radius: 4px;
+  resize: none;
 }
 
 .status { padding: 4px 8px; border-radius: 4px; font-size: 0.9em; }
@@ -372,14 +381,7 @@ input[type="text"], input[type="password"], input[type="email"] {
   color: #003366;
   margin-bottom: 16px;
 }
-.send-request-form textarea {
-  width: 100%;
-  height: 200px;
-  padding: 8px;
-  border: 1px solid #bbb;
-  border-radius: 4px;
-  resize: none;
-}
+
 .send-request-form .form-actions {
   text-align: center;
   margin-top: 16px;
@@ -432,4 +434,3 @@ input[type="text"], input[type="password"], input[type="email"] {
 .housing-list li {
   margin-bottom: .5em;
 }
-

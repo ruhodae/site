@@ -11,6 +11,13 @@ app.secret_key = os.getenv('FLASK_SECRET_KEY', 'change_this_secret')
 
 DATABASE_URL = "postgresql://neondb_owner:npg_PLc2emlNfvD0@ep-jolly-tooth-a2raqljd-pooler.eu-central-1.aws.neon.tech/neondb?sslmode=require"
 
+@app.context_processor
+def inject_user():
+    return {
+        'logged_in': 'user_id' in session,
+        'username': session.get('username', '')
+    }
+    
 def init_db():
     conn = psycopg2.connect(DATABASE_URL, sslmode='require')
     cur = conn.cursor()
@@ -86,15 +93,7 @@ def home():
     cur.close()
     conn.close()
 
-    news = [
-        (
-            n_id,
-            title,
-            content,
-            (created_at + timedelta(hours=5)).strftime('%Y-%m-%d %H:%M'),
-            file_link,
-            media_link
-        )
+    news = [(n_id,title,content,(created_at + timedelta(hours=5)).strftime('%Y-%m-%d %H:%M'),file_link,media_link)
         for n_id, title, content, created_at, file_link, media_link in rows
     ]
     return render_template('index.html', news=news)
@@ -159,10 +158,7 @@ def send_request():
 
     conn = get_conn()
     cur = conn.cursor()
-    cur.execute(
-        "SELECT verification_status FROM user_profiles WHERE user_id = %s",
-        (session['user_id'],)
-    )
+    cur.execute("SELECT verification_status FROM user_profiles WHERE user_id = %s",(session['user_id'],))
     row = cur.fetchone()
     cur.close()
     conn.close()
@@ -176,16 +172,9 @@ def send_request():
         msg = request.form['message']
         conn = get_conn()
         cur = conn.cursor()
-        cur.execute(
-            "SELECT full_name, address FROM user_profiles WHERE user_id=%s",
-            (session['user_id'],)
-        )
+        cur.execute("SELECT full_name, address FROM user_profiles WHERE user_id=%s",(session['user_id'],))
         name, addr = cur.fetchone() or ('', '')
-        cur.execute(
-            "INSERT INTO requests (user_id, name, address, message, date) "
-            "VALUES (%s, %s, %s, %s, CURRENT_DATE)",
-            (session['user_id'], name, addr, msg)
-        )
+        cur.execute("INSERT INTO requests (user_id, name, address, message, date) ""VALUES (%s, %s, %s, %s, CURRENT_DATE)",(session['user_id'], name, addr, msg))
         conn.commit()
         cur.close()
         conn.close()
@@ -205,15 +194,9 @@ def account():
     conn = get_conn()
     cur = conn.cursor()
 
-    # Профиль
-    cur.execute("""
-      SELECT full_name, address, passport_file, verification_status
-      FROM user_profiles
-      WHERE user_id = %s
-    """, (uid,))
+    cur.execute("""SELECT full_name, address, passport_file, verification_status FROM user_profiles WHERE user_id = %s""", (uid,))
     profile = cur.fetchone() or ('', '', None, 'pending')
 
-    # POST на обновление профиля
     if request.method == 'POST' and request.form.get('action') == 'update_profile':
         full_name = request.form['full_name'].strip()
         address   = request.form['address'].strip()
@@ -226,48 +209,20 @@ def account():
             os.makedirs(upload_dir, exist_ok=True)
             file.save(os.path.join(upload_dir, filename))
 
-        # Обновляем или создаём
         if any(profile[:2]):
-            cur.execute("""
-              UPDATE user_profiles
-              SET full_name=%s, address=%s,
-                  passport_file=%s,
-                  verification_status='pending'
-              WHERE user_id=%s
-            """, (full_name, address, filename or profile[2], uid))
+            cur.execute("""UPDATE user_profiles SET full_name=%s, address=%s,passport_file=%s,verification_status='pending'WHERE user_id=%s""", (full_name, address, filename or profile[2], uid))
         else:
-            cur.execute("""
-              INSERT INTO user_profiles
-                (user_id, full_name, address, passport_file)
-              VALUES (%s, %s, %s, %s)
-            """, (uid, full_name, address, filename))
+            cur.execute("""INSERT INTO user_profiles(user_id, full_name, address, passport_file)VALUES (%s, %s, %s, %s)""", (uid, full_name, address, filename))
         conn.commit()
         flash('Данные сохранены и отправлены на проверку.', 'success')
         return redirect(url_for('account'))
 
-    # Мои обращения
-    cur.execute("""
-      SELECT name, address, message, status, date
-      FROM requests
-      WHERE user_id = %s
-      ORDER BY date DESC
-    """, (uid,))
+    cur.execute("""SELECT name, address, message, status, date FROM requests WHERE user_id = %s ORDER BY date DESC""", (uid,))
     user_requests = cur.fetchall()
 
-    # Заявки на верификацию (для админа)
     pending_users = []
     if session.get('username') == 'Admin':
-        cur.execute("""
-          SELECT up.id      AS profile_id,
-                 up.user_id AS uid,
-                 su.username,
-                 up.full_name,
-                 up.passport_file
-          FROM user_profiles up
-            JOIN site_users su ON up.user_id = su.id
-          WHERE up.verification_status = 'pending'
-            AND up.passport_file IS NOT NULL
-        """)
+        cur.execute("""SELECT up.id AS profile_id,up.user_id AS uid,su.username,up.full_name,up.passport_file FROM user_profiles up JOIN site_users su ON up.user_id = su.id WHERE up.verification_status = 'pending' AND up.passport_file IS NOT NULL""")
         pending_users = cur.fetchall()
 
     cur.close()
@@ -288,10 +243,7 @@ def verify_user(pid):
 
     conn = psycopg2.connect(DATABASE_URL, sslmode='require')
     cur = conn.cursor()
-    cur.execute(
-        "UPDATE user_profiles SET verification_status='verified' WHERE id = %s",
-        (pid,)
-    )
+    cur.execute("UPDATE user_profiles SET verification_status='verified' WHERE id = %s",(pid,))
     conn.commit()
     cur.close()
     conn.close()
@@ -306,12 +258,7 @@ def reject_user(pid):
 
     conn = psycopg2.connect(DATABASE_URL, sslmode='require')
     cur = conn.cursor()
-    cur.execute(
-        "UPDATE user_profiles "
-        "SET verification_status='rejected', passport_file = NULL "
-        "WHERE id = %s",
-        (pid,)
-    )
+    cur.execute("UPDATE user_profiles SET verification_status='rejected', passport_file = NULL WHERE id = %s",(pid,))
     conn.commit()
     cur.close()
     conn.close()
@@ -345,26 +292,44 @@ def add_news():
         return redirect(url_for('home'))
     return render_template('add_news.html')
 
-@app.route('/edit_news/<int:news_id>', methods=['GET','POST'])
-def edit_news(news_id):
+@app.route('/edit_news/<int:nid>', methods=['GET','POST'])
+def edit_news(nid):
     if session.get('username') != 'Admin':
         return redirect(url_for('home'))
     conn = psycopg2.connect(DATABASE_URL, sslmode='require')
     cur = conn.cursor()
     if request.method == 'POST':
-        title = request.form.get('title')
-        content = request.form.get('content')
-        cur.execute(
-            "UPDATE news SET title=%s, content=%s WHERE id=%s",
-            (title, content, nid)
-        )
-        conn.commit(); cur.close(); conn.close()
+        title      = request.form.get('title')
+        content    = request.form.get('content')
+        media_link = request.form.get('media_link') or None
+
+        if request.form.get('remove_file'):
+            file_link = None
+        else:
+            f = request.files.get('file')
+            if f and f.filename:
+                fn   = secure_filename(f.filename)
+                path = os.path.join(app.config['UPLOAD_FOLDER'], fn)
+                f.save(path)
+                file_link = path
+            else:
+                cur.execute("SELECT file_link FROM news WHERE id = %s",(nid,))
+                file_link = cur.fetchone()[0]
+
+        cur.execute("""UPDATE news SET title = %s, content = %s, file_link  = %s, media_link = %s WHERE id = %s""",(title, content, file_link, media_link, nid))
+        conn.commit()
+        cur.close()
+        conn.close()
+
         flash('Новость обновлена.', 'success')
         return redirect(url_for('home'))
-    cur.execute("SELECT title, content FROM news WHERE id=%s", (nid,))
+
+    cur.execute("SELECT title, content, file_link, media_link " "FROM news WHERE id = %s",(nid,))
     news_item = cur.fetchone()
-    cur.close(); conn.close()
-    return render_template('edit_news.html', news=news_item, nid=nid)
+    cur.close()
+    conn.close()
+
+    return render_template('edit_news.html',news=news_item,nid=nid)
 
 @app.route('/delete_news/<int:nid>', methods=['POST'])
 def delete_news(nid):

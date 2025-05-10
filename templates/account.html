@@ -63,6 +63,15 @@
       </a>
     </div>
   </form>
+  
+    {% if username == 'Admin' %}
+    <a href="{{ url_for('add_news') }}"
+       class="btn btn-primary"
+       style="margin-top: -4.5rem;">
+      Добавить новость
+    </a>
+  {% endif %}
+
 
   <h2>Мои обращения</h2>
   {% if user_requests %}
